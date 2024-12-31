@@ -5,8 +5,10 @@ import {
   HttpException,
   HttpStatus,
   Get,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -45,6 +47,7 @@ export class AuthController {
     return user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('test')
   getHello(): string {
     return 'Hello, this is a direct response!';
