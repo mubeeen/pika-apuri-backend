@@ -1,0 +1,8 @@
+{
+    "auth": {
+      "login_success": "Login successful!",
+      "login_failed": "Login failed."
+    },
+    "greeting": "Welcome!"
+  }
+  
