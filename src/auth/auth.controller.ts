@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { I18n, I18nContext } from 'nestjs-i18n';
 
 @Controller('auth')
 export class AuthController {
@@ -49,7 +50,12 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('test')
-  getHello(): string {
-    return 'Hello, this is a direct response!';
+  async getHello(@I18n() i18n: I18nContext) {
+    const currentLang = i18n.lang;
+    console.log('current lang', currentLang);
+    const message = await i18n.t('greeting', { lang: currentLang });
+    console.log('MESSAGE', message);
+
+    return await i18n.t('greeting', { lang: currentLang });
   }
 }

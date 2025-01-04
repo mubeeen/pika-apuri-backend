@@ -1,8 +1,39 @@
 {
-    "auth": {
-      "login_success": "Login successful!",
-      "login_failed": "Login failed."
+  "locale": "en",
+  "translations": {
+    "app": {
+      "title": "Application Title",
+      "description": "This is an example description for the app."
     },
-    "greeting": "Welcome!"
+    "menu": {
+      "home": "Home",
+      "about": "About",
+      "contact": "Contact",
+      "settings": "Settings"
+    },
+    "auth": {
+      "login": "Login",
+      "logout": "Logout",
+      "register": "Register",
+      "forgotPassword": "Forgot Password?"
+    },
+    "errors": {
+      "404": "Page not found",
+      "500": "Internal server error",
+      "validation": {
+        "required": "This field is required.",
+        "invalidEmail": "Please enter a valid email address."
+      }
+    },
+    "messages": {
+      "welcome": "Welcome, {name}!",
+      "success": "Action completed successfully.",
+      "failure": "There was an error processing your request."
+    },
+    "buttons": {
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "close": "Close"
+    }
   }
-  
+}
