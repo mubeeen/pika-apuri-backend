@@ -14,7 +14,6 @@ export class UsersService {
     firstName: string,
     lastName: string,
   ): Promise<User> {
-    //creating new user in User Schema
     const newUser = new User();
     newUser.email = email;
     newUser.firstName = firstName;
@@ -22,7 +21,6 @@ export class UsersService {
 
     const savedUser = await this.manager.save(User, newUser);
 
-    //creating new auth in auth schema
     const hashedPassword = await bcrypt.hash(password, 10);
     const newAuth = new Auth();
     newAuth.user = savedUser;

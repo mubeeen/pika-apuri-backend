@@ -13,12 +13,13 @@ import {
   CookieResolver,
   I18nModule,
 } from 'nestjs-i18n';
+import { ProfilesModule } from './profiles/profiles.module';
 
 @Module({
   imports: [
     I18nModule.forRootAsync({
       useFactory: () => ({
-        fallbackLanguage: 'en',
+        fallbackLanguage: 'fi',
         loaderOptions: {
           path: path.join(__dirname, '/i18n/'),
           watch: true,
@@ -51,6 +52,7 @@ import {
     }),
     UsersModule,
     AuthModule,
+    ProfilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

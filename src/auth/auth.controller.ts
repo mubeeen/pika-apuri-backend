@@ -49,11 +49,11 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('test')
+  @Get('tests')
   async getHello(@I18n() i18n: I18nContext) {
     const currentLang = i18n.lang;
     console.log('current lang', currentLang);
-    const message = await i18n.t('greeting', { lang: currentLang });
+    const message = await i18n.t('greeting', { lang: 'sv' });
     console.log('MESSAGE', message);
 
     return await i18n.t('greeting', { lang: currentLang });
