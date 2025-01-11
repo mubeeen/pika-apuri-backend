@@ -48,6 +48,9 @@ export class AuthService {
       lastname,
     );
 
-    return user;
+    const payload = { username: user.email, sub: user.id };
+    const accessToken = this.jwtService.sign(payload);
+
+    return { accessToken, user };
   }
 }

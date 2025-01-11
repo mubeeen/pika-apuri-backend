@@ -1,7 +1,7 @@
 {
-    "auth": {
-      "login_success": "Inloggning lyckades!",
-      "login_failed": "Inloggning misslyckades."
-    },
-    "greeting": "Välkommen!"
-  }
+  "auth": {
+    "login_success": "Inloggning lyckades!",
+    "login_failed": "Inloggning misslyckades."
+  },
+  "greeting": "Välkommen!"
+}
