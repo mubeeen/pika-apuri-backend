@@ -16,10 +16,9 @@ export class ProfileService {
 
   //create new profile
   async createProfile(
-    userId: number,
+    userId: string,
     createProfileDto: CreateProfileDto,
   ): Promise<Profile> {
-    console.log('Ccegsg', userId);
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
@@ -33,7 +32,7 @@ export class ProfileService {
   }
 
   //get profile
-  async getProfile(userId: number): Promise<Profile> {
+  async getProfile(userId: string): Promise<Profile> {
     const profile = await this.profileRepository.findOne({
       where: { user: { id: userId } },
     });
@@ -47,7 +46,7 @@ export class ProfileService {
 
   //update profile
   async updateProfile(
-    userId: number,
+    userId: string,
     updateProfileDto: UpdateProfileDto,
   ): Promise<Profile> {
     const profile = await this.profileRepository.findOne({
@@ -64,7 +63,7 @@ export class ProfileService {
   }
 
   //delete profile
-  async deleteProfile(userId: number): Promise<void> {
+  async deleteProfile(userId: string): Promise<void> {
     const profile = await this.profileRepository.findOne({
       where: { user: { id: userId } },
     });

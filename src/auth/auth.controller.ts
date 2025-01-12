@@ -6,10 +6,13 @@ import {
   HttpStatus,
   Get,
   UseGuards,
+  ValidationPipe
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -46,6 +49,37 @@ export class AuthController {
       data.lastname,
     );
     return user;
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() forgotPassword: ForgotPasswordDto) {
+    const { email } = forgotPassword;
+    const emailExists = await this.authService.checkIfEmailExists(email);
+    if (!emailExists) {
+      return { message: 'User with this email doesnt exist!' };
+    }
+    await this.authService.generateResetToken(email);
+
+    return {
+      message: 'The reset password link has been sent to the provided email!',
+    };
+  }
+  @Post('reset-password')
+  async resetPassword(
+    @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ message: string }> {
+    const { token, newPassword } = resetPasswordDto;
+
+    const isReset = await this.authService.resetPassword(token, newPassword);
+
+    if (!isReset) {
+      throw new HttpException(
+        'Invalid or expired reset token',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return { message: 'Password reset successfully' };
   }
 
   @UseGuards(JwtAuthGuard)

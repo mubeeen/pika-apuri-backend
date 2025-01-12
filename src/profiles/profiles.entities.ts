@@ -11,8 +11,8 @@ import {
 
 @Entity('profile')
 export class Profile {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()

@@ -53,4 +53,64 @@ export class AuthService {
 
     return { accessToken, user };
   }
+
+  async checkIfEmailExists(email: string): Promise<boolean> {
+    const user = await this.userService.findUserByEmail(email);
+    return !!user;
+  }
+
+  async generateResetToken(email: string): Promise<void> {
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) {
+      return;
+    }
+
+    const resetToken = this.jwtService.sign(
+      { userId: user.id },
+      { secret: process.env.RESET_TOKEN_SECRET, expiresIn: '15m' },
+    );
+
+    const expiryDate = new Date();
+    expiryDate.setMinutes(expiryDate.getMinutes() + 15);
+
+    await this.userService.saveResetToken(user.id, resetToken, expiryDate);
+
+    await this.sendResetEmail(email, resetToken);
+  }
+
+  private async sendResetEmail(email: string, token: string): Promise<void> {
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    console.log(`Sending email to ${email} with reset link: ${resetLink}`);
+    // Implement email sending logic here
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<boolean> {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: process.env.RESET_TOKEN_SECRET,
+      });
+    } catch (e) {
+      return false;
+    }
+
+    //verify token
+    const user = await this.userService.findUserById(payload.userId);
+    if (
+      !user ||
+      user.resetToken !== token ||
+      new Date() > user.resetTokenExpiry
+    ) {
+      return false;
+    }
+
+    // Hash the new password and update the user
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userService.updatePassword(user.id, hashedPassword);
+
+    // Clear the reset token
+    await this.userService.clearResetToken(user.id);
+
+    return true;
+  }
 }

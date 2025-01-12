@@ -9,8 +9,8 @@ import { User } from '../users/users.entity';
 
 @Entity('auth')
 export class Auth {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @OneToOne(() => User)
   @JoinColumn()

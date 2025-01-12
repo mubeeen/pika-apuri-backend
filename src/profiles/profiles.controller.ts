@@ -16,27 +16,27 @@ export class ProfilesController {
 
   @Post(':userId')
   async createProfile(
-    @Param('id') userId: number,
+    @Param('id') userId: string,
     @Body() createProfileDto: CreateProfileDto,
   ) {
     return this.profileService.createProfile(userId, createProfileDto);
   }
 
   @Get(':userId')
-  async getProfile(@Param('userId') userId: number) {
+  async getProfile(@Param('userId') userId: string) {
     return this.profileService.getProfile(userId);
   }
 
   @Put(':userId')
   async updateProfile(
-    @Param('userId') userId: number,
+    @Param('userId') userId: string,
     @Body() updateProfileDto: UpdateProfileDto,
   ) {
     return this.profileService.updateProfile(userId, updateProfileDto);
   }
 
   @Delete(':userId')
-  async deleteProfile(@Param('userId') userId: number) {
+  async deleteProfile(@Param('userId') userId: string) {
     return this.profileService.deleteProfile(userId);
   }
 }
