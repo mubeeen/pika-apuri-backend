@@ -56,7 +56,7 @@ export class UsersService {
   async findUserById(userId: string): Promise<User | undefined> {
     return this.manager.findOne(User, { where: { id: userId } });
   }
-  
+
   async updatePassword(userId: string, hashedPassword: string): Promise<void> {
     const auth = await this.manager.findOne(Auth, {
       where: { user: { id: userId } },

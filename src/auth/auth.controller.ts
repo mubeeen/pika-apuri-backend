@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Get,
   UseGuards,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -21,9 +21,17 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() data: { email: string; password: string },
-  ): Promise<{ accessToken: string }> {
+    @I18n() i18n: I18nContext,
+  ): Promise<{ accessToken: string; message: string }> {
     try {
-      return await this.authService.login(data);
+      const loginResponse = await this.authService.login(data);
+
+      const message = (await i18n.t('test.HELLO')) as string;
+
+      return {
+        accessToken: loginResponse.accessToken,
+        message,
+      };
     } catch {
       throw new HttpException(
         'Internal server error',

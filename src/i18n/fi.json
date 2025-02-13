@@ -1,7 +1,0 @@
-{
-  "auth": {
-    "login_success": "Kirjautuminen onnistui!",
-    "login_failed": "Kirjautuminen epäonnistui."
-  },
-  "greeting": "Tervetuloa!"
-}

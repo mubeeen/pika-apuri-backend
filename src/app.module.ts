@@ -18,8 +18,8 @@ import { ProfilesModule } from './profiles/profiles.module';
 @Module({
   imports: [
     I18nModule.forRootAsync({
-      useFactory: () => ({
-        fallbackLanguage: 'fi',
+      useFactory: (configService: ConfigService) => ({
+        fallbackLanguage: 'en',
         loaderOptions: {
           path: path.join(__dirname, '/i18n/'),
           watch: true,
