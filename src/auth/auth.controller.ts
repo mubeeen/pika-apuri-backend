@@ -49,14 +49,17 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body() data: SignupDto, // Use the SignupDto for validation
+    @Body() data: SignupDto, 
   ): Promise<any> {
     try {
+      const { email, password, firstname, lastname, role } = data;
+
       const user = await this.authService.register(
-        data.email,
-        data.password,
-        data.firstname,
-        data.lastname,
+        email,
+        password,
+        firstname,
+        lastname,
+        role, 
       );
 
       return {

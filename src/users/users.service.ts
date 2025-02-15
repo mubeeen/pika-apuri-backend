@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
-import { User } from './users.entity';
+import { User, UserRole } from './users.entity';
 import { Auth } from 'src/auth/auth.entities';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from '../users/user.repository';
 import * as bcrypt from 'bcrypt';
+import { BuyerProfile } from 'src/buyer-profile/buyer-profile.entity';
+import { SellerProfile } from 'src/seller-profile/seller-profile.entity';
 
 @Injectable()
 export class UsersService {
@@ -19,13 +21,25 @@ export class UsersService {
     password: string,
     firstName: string,
     lastName: string,
+    role: UserRole,
   ): Promise<User> {
     const newUser = new User();
     newUser.email = email;
     newUser.firstName = firstName;
     newUser.lastName = lastName;
+    newUser.role = role;
 
     const savedUser = await this.manager.save(User, newUser);
+
+    if (role === UserRole.BUYER) {
+      const buyerProfile = new BuyerProfile();
+      buyerProfile.user = savedUser;
+      await this.manager.save(BuyerProfile, buyerProfile);
+    } else if (role === UserRole.SELLER) {
+      const sellerProfile = new SellerProfile();
+      sellerProfile.user = savedUser;
+      await this.manager.save(SellerProfile, sellerProfile);
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const newAuth = new Auth();

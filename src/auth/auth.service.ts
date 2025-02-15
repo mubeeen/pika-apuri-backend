@@ -3,6 +3,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { UserRole } from 'src/users/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -40,12 +41,14 @@ export class AuthService {
     password: string,
     firstname: string,
     lastname: string,
+    role: UserRole,
   ) {
     const user = await this.userService.createUserAndAuth(
       email,
       password,
       firstname,
       lastname,
+      role,
     );
 
     const payload = { username: user.email, sub: user.id };

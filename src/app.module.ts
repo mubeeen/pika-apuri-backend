@@ -13,7 +13,8 @@ import {
   CookieResolver,
   I18nModule,
 } from 'nestjs-i18n';
-import { ProfilesModule } from './profiles/profiles.module';
+import { SellerProfileModule } from './seller-profile/seller-profile.module';
+import { BuyerProfileModule } from './buyer-profile/buyer-profile.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { ProfilesModule } from './profiles/profiles.module';
     }),
     UsersModule,
     AuthModule,
-    ProfilesModule,
+    SellerProfileModule,
+    BuyerProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

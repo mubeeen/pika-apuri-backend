@@ -7,14 +7,16 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
+// import { Review } from 'src/reviews/review.entity'; // Assuming the Review entity is the same
 
-@Entity('profile')
-export class Profile {
+@Entity('seller_profiles')
+export class SellerProfile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => User, (user) => user.profile)
+  @OneToOne(() => User, (user) => user.sellerProfile)
   @JoinColumn()
   user: User;
 
@@ -27,14 +29,14 @@ export class Profile {
   @Column({ type: 'jsonb', nullable: true })
   address: { street: string; city: string; zip: string };
 
-  @Column({ nullable: true })
-  university: string;
-
   @Column({ type: 'text', array: true, nullable: true })
   skills: string[];
 
   @Column({ type: 'float', default: 0.0 })
   rating: number;
+
+  //   @OneToMany(() => Review, (review) => review.seller)
+  //   reviews: Review[]; // Array of reviews from buyers
 
   @CreateDateColumn()
   createdAt: Date;
