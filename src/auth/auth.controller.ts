@@ -7,17 +7,19 @@ import {
   Get,
   UseGuards,
   ValidationPipe,
+  Logger,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SignupDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
+  private readonly logger = new Logger(AuthController.name);
   @Post('login')
   async login(
     @Body() data: { email: string; password: string },
@@ -32,9 +34,14 @@ export class AuthController {
         accessToken: loginResponse.accessToken,
         message,
       };
-    } catch {
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Internal server error';
+
       throw new HttpException(
-        'Internal server error',
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: errorMessage,
+        },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -42,36 +49,71 @@ export class AuthController {
 
   @Post('signup')
   async signup(
-    @Body()
-    data: {
-      email: string;
-      password: string;
-      firstname: string;
-      lastname: string;
-    },
+    @Body() data: SignupDto, // Use the SignupDto for validation
   ): Promise<any> {
-    const user = await this.authService.register(
-      data.email,
-      data.password,
-      data.firstname,
-      data.lastname,
-    );
-    return user;
+    try {
+      const user = await this.authService.register(
+        data.email,
+        data.password,
+        data.firstname,
+        data.lastname,
+      );
+
+      return {
+        success: true,
+        message: 'User successfully registered',
+        user,
+      };
+    } catch (error: any) {
+      const errorMessage = error?.message || 'Internal server error';
+      console.error('Signup Error:', error);
+
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: errorMessage,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('forgot-password')
   async forgotPassword(@Body() forgotPassword: ForgotPasswordDto) {
-    const { email } = forgotPassword;
-    const emailExists = await this.authService.checkIfEmailExists(email);
-    if (!emailExists) {
-      return { message: 'User with this email doesnt exist!' };
-    }
-    await this.authService.generateResetToken(email);
+    try {
+      const { email } = forgotPassword;
 
-    return {
-      message: 'The reset password link has been sent to the provided email!',
-    };
+      // Check if the email exists
+      const emailExists = await this.authService.checkIfEmailExists(email);
+      if (!emailExists) {
+        this.logger.warn(`Forgot Password Attempt: Email not found - ${email}`);
+        throw new HttpException(
+          { message: 'User with this email does not exist!' },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      // Generate reset token
+      await this.authService.generateResetToken(email);
+
+      this.logger.log(`Password reset link sent to: ${email}`);
+
+      return {
+        message:
+          'A password reset link has been sent to your email. Please check your inbox!',
+      };
+    } catch (error) {
+      this.logger.error('Forgot Password Error:', error);
+      throw new HttpException(
+        {
+          message:
+            'An error occurred while processing your request. Please try again later.',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
+
   @Post('reset-password')
   async resetPassword(
     @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
