@@ -24,15 +24,18 @@ export class AuthService {
     return null;
   }
 
-  async login(data: any): Promise<{ accessToken: string }> {
+  async login(data: any): Promise<{ loginData: any; accessToken: string }> {
     const loginData = await this.validateUser(data.email, data.password);
     if (!loginData) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
     const payload = { username: loginData.email, sub: loginData.id };
+    const accessToken = this.jwtService.sign(payload);
+
     return {
-      accessToken: this.jwtService.sign(payload),
+      loginData,
+      accessToken,
     };
   }
 
@@ -43,6 +46,14 @@ export class AuthService {
     lastname: string,
     role: UserRole,
   ) {
+    const existingUser = await this.checkIfEmailExists(email);
+    if (existingUser) {
+      throw new HttpException(
+        'Email already in use. Please use a different email.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const user = await this.userService.createUserAndAuth(
       email,
       password,

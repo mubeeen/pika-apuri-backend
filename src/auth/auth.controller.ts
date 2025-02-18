@@ -15,6 +15,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SignupDto } from './dto/signup.dto';
+import { AuthResponseDTO } from './dto/auth-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -24,15 +25,20 @@ export class AuthController {
   async login(
     @Body() data: { email: string; password: string },
     @I18n() i18n: I18nContext,
-  ): Promise<{ accessToken: string; message: string }> {
+  ): Promise<AuthResponseDTO> {
     try {
       const loginResponse = await this.authService.login(data);
-
-      const message = (await i18n.t('test.HELLO')) as string;
+      // const message = (await i18n.t('test.HELLO')) as string;
 
       return {
+        user: {
+          id: loginResponse.loginData.id,
+          role: loginResponse.loginData.role,
+          firstName: loginResponse.loginData.firstName,
+          lastName: loginResponse.loginData.lastName,
+          email: loginResponse.loginData.email,
+        },
         accessToken: loginResponse.accessToken,
-        message,
       };
     } catch (error: any) {
       const errorMessage = error?.message || 'Internal server error';
@@ -48,24 +54,27 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signup(
-    @Body() data: SignupDto, 
-  ): Promise<any> {
+  async signup(@Body() data: SignupDto): Promise<AuthResponseDTO> {
     try {
       const { email, password, firstname, lastname, role } = data;
 
-      const user = await this.authService.register(
+      const { user, accessToken } = await this.authService.register(
         email,
         password,
         firstname,
         lastname,
-        role, 
+        role,
       );
 
       return {
-        success: true,
-        message: 'User successfully registered',
-        user,
+        user: {
+          id: user.id,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+        },
+        accessToken,
       };
     } catch (error: any) {
       const errorMessage = error?.message || 'Internal server error';
