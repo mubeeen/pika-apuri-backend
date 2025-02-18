@@ -40,16 +40,19 @@ import { BuyerProfileModule } from './buyer-profile/buyer-profile.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => {
+        const isSslRequired = configService.get<string>('DB_SSL') === 'true';
+        return {
         type: 'postgres',
         host: configService.get<string>('DATABASE_HOST'),
         port: configService.get<number>('DATABASE_PORT'),
         username: configService.get<string>('DATABASE_USER'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
+        ssl: isSslRequired ? { rejectUnauthorized: false } : false,
         autoLoadEntities: true,
         synchronize: true,
-      }),
+      }},
     }),
     UsersModule,
     AuthModule,
