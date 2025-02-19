@@ -13,9 +13,9 @@ async function bootstrap() {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.sendStatus(204);  // No content, successful CORS preflight response
   });
-  
+
   app.enableCors({
-    origin: ['http://localhost:3001', 'https://pika-apuri-backend.onrender.com'],
+    origin: ['*'],
     methods: 'GET, POST, PUT, DELETE, PATCH',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
